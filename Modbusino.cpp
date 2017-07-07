@@ -124,9 +124,22 @@ static void flush(void)
 
     /* Wait a moment to receive the remaining garbage but avoid getting stuck
      * because the line is saturated */
-    while (Serial.available() && i++ < 10) {
-	Serial.flush();
-	delay(3);
+    while (Serial.available()) {
+	//Serial.flush();
+        /*
+         * after arduino 1.0
+         * Serial.flush() is repurposed to wait for sending data rather than
+         * dropping all the available receiving data
+         * use Serial.read() instead
+         */
+        Serial.read();
+        i = 0;
+        while(!Serial.available()) {
+          if(i++ > 10) {
+            return;
+          }
+          delay(1);
+        }
     }
 }
 
